@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vue 3 Basic</title>
+
+    <style>
+        [v-cloak] {
+            display: none
+        }
+
+        input {
+            margin: 10px;
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app" v-cloak>
+        <login-form />
+    </div>
+
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+
+    <script>
+        let app = Vue.createApp({})
+
+        app.component('login-form', {
+            template: `
+                <form @submit.prevent = "handleSubmit">
+                    <h1>{{title}}</h1>
+                    <custom-input 
+                        v-for="(input, i) in inputs"
+                        :key="i"
+                        v-model="input.value" 
+                        :label="input.label"
+                        :type="input.type" 
+                    />
+                    
+                    <button type='submit'>Log in</button>
+                </form>
+            `,
+            components: ['custom-input'],
+            data() {
+                return {
+                    title: 'Login Form',
+                    inputs: [
+                        {
+                            label: 'Email',
+                            value: '',
+                            type: 'email'
+                        },
+                        {
+                            label: 'Password',
+                            value: '',
+                            type: 'password'
+                        },
+                    ]
+                }
+            },
+            methods: {
+                handleSubmit() {
+                    console.log('submitted with email: ' + this.inputs[0].value + ' and password: ' + this.inputs[1].value)
+                }
+            }
+        })
+
+        app.component('custom-input', {
+            template: `
+                <label>
+                    {{label}}
+                    <input :type='type' v-model="inputValue" />
+                </label>
+            `,
+            props: ['label', 'modelValue', 'type'],
+            computed: {
+                inputValue: {
+                    get() {
+                        return this.modelValue
+                    },
+                    set(value) {
+                        this.$emit('update:modelValue', value)
+                    }
+                }
+            }
+        })
+
+        app.mount('#app')
+    </script>
+</body>
+</html>
